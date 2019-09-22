@@ -1,4 +1,5 @@
 === Wonkasoft Refersion Integration ===
+
 Contributors: mrlister1, llister, Wonkasoft
 Donate link: https://paypal.me/Wonkasoft
 Tags: Refersion, WooCommerce, referrals, Social, Marketing

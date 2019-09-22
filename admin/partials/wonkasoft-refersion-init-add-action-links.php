@@ -11,8 +11,6 @@
  * @subpackage Wonkasoft_Refersion_Init/admin/partials
  */
 
-add_filter( 'plugin_action_links_' . WONKASOFT_REFERSION_INIT_BASENAME, 'wonkasoft_refersion_init_add_settings_link_filter', 10, 1 );
-
 /**
  * This sets the action links on the plugins screen on the plugin side.
  *
@@ -27,8 +25,6 @@ function wonkasoft_refersion_init_add_settings_link_filter( $links ) {
     vertical-align: text-top; float: none;" /></a>';
 	return $links;
 }
-
-add_filter( 'plugin_row_meta', 'wonkasoft_refersion_init_add_description_link_filter', 10, 2 );
 
 /**
  * This sets the action links on the plugins screen on the description side.
