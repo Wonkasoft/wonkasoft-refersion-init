@@ -121,11 +121,6 @@ class Wonkasoft_Refersion_Init {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wonkasoft-refersion-init-admin.php';
 
 		/**
-		 * The admin screen for this plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/wonkasoft-refersion-init-admin-display.php';
-
-		/**
 		 * The addition on action links for the plugins screen.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/wonkasoft-refersion-init-add-action-links.php';

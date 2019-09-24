@@ -108,45 +108,33 @@ class Wonkasoft_Refersion_Init_Admin {
 		*/
 		global $wonkasoft_refersion_init_page;
 		if ( empty( $GLOBALS['admin_page_hooks']['wonkasoft_menu'] ) ) {
-			$wonkasoft_refersion_init_page = 'wonkasoft_menu';
 			add_menu_page(
-				'Wonkasoft',
-				'Wonkasoft Tools',
+				'Wonkasoft Tools Options',
+				'Tools Options',
 				'manage_options',
 				'wonkasoft_menu',
-				array( $this, 'wonkasoft_refersion_init_settings_display' ),
+				array( $this, 'wonkasoft_tools_options_page' ),
 				WONKASOFT_REFERSION_INIT_IMG_PATH . '/wonka-logo-2.svg',
 				100
 			);
 
 			$this->wonkasoft_tools_add_options();
-
-			add_submenu_page(
-				'wonkasoft_menu',
-				WONKASOFT_REFERSION_INIT_NAME,
-				WONKASOFT_REFERSION_INIT_NAME,
-				'manage_options',
-				$wonkasoft_refersion_init_page,
-				array( $this, 'wonkasoft_refersion_init_settings_display' )
-			);
-
 			add_action( 'admin_enqueue_scripts', array( $this, 'wonkasoft_tools_options_js' ), 10, 1 );
-
-		} else {
-
-			/**
-			* This creates option page in the settings tab of admin menu
-			*/
-			$wonkasoft_refersion_init_page = 'wonkasoft_refersion_init_settings_display';
-			add_submenu_page(
-				'wonkasoft_menu',
-				WONKASOFT_REFERSION_INIT_NAME,
-				WONKASOFT_REFERSION_INIT_NAME,
-				'manage_options',
-				$wonkasoft_refersion_init_page,
-				array( $this, 'wonkasoft_refersion_init_settings_display' )
-			);
+			add_action( 'wp_ajax_nopriv_wonkasoft_plugins_ajax_requests', array( $this, 'wonkasoft_plugins_ajax_requests' ) );
+			add_action( 'wp_ajax_wonkasoft_plugins_ajax_requests', array( $this, 'wonkasoft_plugins_ajax_requests' ) );
 		}
+		/**
+		* This creates option page in the settings tab of admin menu
+		*/
+		$wonkasoft_refersion_init_page = 'wonkasoft_refersion_init_settings_display';
+		add_submenu_page(
+			'wonkasoft_menu',
+			WONKASOFT_REFERSION_INIT_NAME,
+			WONKASOFT_REFERSION_INIT_NAME,
+			'manage_options',
+			$wonkasoft_refersion_init_page,
+			array( $this, 'wonkasoft_refersion_init_settings_display' )
+		);
 
 	}
 
@@ -154,21 +142,13 @@ class Wonkasoft_Refersion_Init_Admin {
 	 * This function is the callback for the admin screen for this plugin.
 	 */
 	public function wonkasoft_refersion_init_settings_display() {
-		include_once plugin_dir_path( __FILE__ ) . 'partials/wonkasoft-refersion-init-admin-display.php';
+		include_once plugin_dir_path( __FILE__ ) . 'partials/wonkasoft-getresponse-init-admin-display.php';
 	}
 
 	/**
 	 * Addition of apera-bags theme options.
 	 */
 	public function wonkasoft_tools_add_options() {
-		add_submenu_page(
-			'wonkasoft_menu',
-			'Tools Options',
-			'Tools Options',
-			'manage_options',
-			'wonkasoft-tools-options',
-			array( $this, 'wonkasoft_tools_options_page' )
-		);
 
 		$registered_options = ( ! empty( get_option( 'custom_options_added' ) ) ) ? get_option( 'custom_options_added' ) : '';
 
@@ -187,43 +167,45 @@ class Wonkasoft_Refersion_Init_Admin {
 		}
 	}
 
-		/**
-		 * Used to sanitize the options
-		 *
-		 * @param  string $option contains the value within the option.
-		 * @return string         returns the sanitized option value.
-		 */
+			/**
+			 * Used to sanitize the options
+			 *
+			 * @param  string $option contains the value within the option.
+			 * @return string         returns the sanitized option value.
+			 */
 	public function wonkasoft_tools_options_sanitize( $option ) {
 		$option = esc_html( $option );
 		return $option;
 	}
 
-		/**
-		 * This builds the display of the options page.
-		 */
-	public function wonkasoft_tools_options_page() {   ?>
-				<div class="container">
-					<div class="row">
-						<div class="col-12 title-column">
-							<?php
-							$title_text = get_admin_page_title();
-							?>
-							<h3 class="title-header"><?php echo wp_kses_post( $title_text ); ?></h3>
+			/**
+			 * This builds the display of the options page.
+			 */
+	public function wonkasoft_tools_options_page() {
+		if ( is_admin() ) {
+			?>
+					<div class="container">
+						<div class="row">
+							<div class="col-12 title-column">
+								<?php
+								$title_text = get_admin_page_title();
+								?>
+								<h3 class="title-header"><?php echo wp_kses_post( $title_text ); ?></h3>
+							</div>
 						</div>
-					</div>
-					<div class="row">
-						<div class="col-12 options column">
-							<div class="card w-100">
-								<div class="card-title">
-									<h3><?php esc_html_e( 'Add an option', 'Wonkasoft_Refersion_Init' ); ?></h3>
-									<button type="button" id="theme_option_add" class="wonka-btn" data-toggle="modal" data-target="#add_option_modal">OPTION <i class="fa fa-plus"></i></button>
-								</div>
-								<div class="card-body">
-							<form id="custom-options-form" method="post" action="options.php">
+						<div class="row">
+							<div class="col-12 options column">
+								<div class="card w-100">
+									<div class="card-title">
+										<h3><?php esc_html_e( 'Add an option', 'Wonkasoft_Getresponse_Init' ); ?></h3>
+										<button type="button" id="wonkasoft_option_add" class="wonka-btn" data-toggle="modal" data-target="#add_option_modal">Option <i class="fa fa-plus"></i></button>
+									</div>
+									<div class="card-body">
+								<form id="custom-options-form" method="post" action="options.php">
 
-						  <?php settings_fields( 'wonkasoft-tools-options-group' ); ?>
+							  <?php settings_fields( 'wonkasoft-tools-options-group' ); ?>
 
-						  <?php do_settings_sections( 'wonkasoft-tools-options-group' ); ?>
+							  <?php do_settings_sections( 'wonkasoft-tools-options-group' ); ?>
 
 								<?php
 									$registered_options = ( ! empty( get_option( 'custom_options_added' ) ) ) ? get_option( 'custom_options_added' ) : '';
@@ -247,35 +229,35 @@ class Wonkasoft_Refersion_Init_Admin {
 									}
 									endif;
 								?>
-						<div class="submitter">
+							<div class="submitter">
 
 									  <?php submit_button( 'Save Settings' ); ?>
 
-						</div>
-						</form>
-								  </div>
-							</div><!-- card w-100 -->
-						</div>
-						<!-- Modal -->
-						<div id="add_option_modal" class="modal fade" role="dialog">
-						  <div class="modal-dialog">
+							</div>
+							</form>
+									  </div>
+								</div><!-- card w-100 -->
+							</div>
+							<!-- Modal -->
+							<div id="add_option_modal" class="modal fade" role="dialog">
+							  <div class="modal-dialog">
 
-							<!-- Modal content-->
-							<div class="modal-content">
-							  <div class="modal-header">
-								<h4 class="modal-title">Add Option</h4>
-								<button type="button" class="close" data-dismiss="modal">&times;</button>
-							  </div>
-							  <div class="modal-body">
-									<div class="input-group mb-3">
-										<input class="form-control" type="text" id="new_option_name" name="new_option_name" placeholder="enter option name..." value="" />
-									</div>
-									<div class="input-group mb-3">
-										<input class="form-control" type="text" id="new_option_description" name="new_option_description" placeholder="enter option description..." value="" />
-									</div>
-									<div class="input-group mb-3">
-										<input class="form-control" type="text" id="new_option_api" name="new_option_api" placeholder="whos api..." value="" />
-									</div>
+								<!-- Modal content-->
+								<div class="modal-content">
+								  <div class="modal-header">
+									<h4 class="modal-title">Add Option</h4>
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+								  </div>
+								  <div class="modal-body">
+										<div class="input-group mb-3">
+											<input class="form-control" type="text" id="new_option_name" name="new_option_name" placeholder="enter option name..." value="" />
+										</div>
+										<div class="input-group mb-3">
+											<input class="form-control" type="text" id="new_option_description" name="new_option_description" placeholder="enter option description..." value="" />
+										</div>
+										<div class="input-group mb-3">
+											<input class="form-control" type="text" id="new_option_api" name="new_option_api" placeholder="whos api..." value="" />
+										</div>
 									<?php
 									wp_nonce_field(
 										'theme_options_ajax_post',
@@ -284,24 +266,25 @@ class Wonkasoft_Refersion_Init_Admin {
 										true
 									);
 									?>
-							  </div>
-							  <div class="modal-footer">
-									<button type="button" class="btn wonka-btn btn-success" data-dismiss="modal" id="add_option_name">Add option <i class="fa fa-plus"></i></button>
+								  </div>
+								  <div class="modal-footer">
+										<button type="button" class="btn wonka-btn btn-success" data-dismiss="modal" id="add_option_name">Add option <i class="fa fa-plus"></i></button>
+								  </div>
+								</div>
+
 							  </div>
 							</div>
-
-						  </div>
 						</div>
 					</div>
-				</div>
-			<?php
+				<?php
+		}
 	}
 
-	/**
-	 * For the parsing of option fields.
-	 *
-	 * @param  array $field array of the fields.
-	 */
+		/**
+		 * For the parsing of option fields.
+		 *
+		 * @param  array $field array of the fields.
+		 */
 	public function wonkasoft_tool_option_parse( $field ) {
 
 		$field['class']         = isset( $field['class'] ) ? $field['class'] : 'select short';
@@ -323,7 +306,7 @@ class Wonkasoft_Refersion_Init_Admin {
 		}
 
 		$output .= '<div class="' . esc_attr( $field['id'] ) . '_field ' . esc_attr( $field['wrapper_class'] ) . '">
-			<label for="' . esc_attr( $field['id'] ) . '">' . wp_kses_post( $field['label'] ) . '</label>';
+				<label for="' . esc_attr( $field['id'] ) . '">' . wp_kses_post( $field['label'] ) . '</label>';
 
 		if ( ! empty( $field['description'] ) && false !== $field['desc_tip'] ) {
 			$output .= '<span class="woocommerce-help-tip" data-toggle="tooltip" data-placement="top" title="' . esc_attr( $field['description'] ) . '"></span>';
@@ -385,7 +368,7 @@ class Wonkasoft_Refersion_Init_Admin {
 	 */
 	public function wonkasoft_tools_options_js( $page ) {
 
-		if ( 'wonkasoft-tools_page_wonkasoft-tools-options' === $page ) :
+		if ( 'toplevel_page_wonkasoft_menu' === $page || 'wonkasoft_menu' === $page ) :
 			wp_enqueue_style( 'bootstrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', array(), '4.3.1', 'all' );
 
 			wp_style_add_data( 'bootstrap', array( 'integrity', 'crossorigin' ), array( 'sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T', 'anonymous' ) );
@@ -394,7 +377,7 @@ class Wonkasoft_Refersion_Init_Admin {
 
 			wp_script_add_data( 'bootstrapjs', array( 'integrity', 'crossorigin' ), array( 'sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM', 'anonymous' ) );
 
-			wp_enqueue_script( 'wonkasoft-tools-options-js', str_replace( array( 'http:', 'https:' ), '', get_stylesheet_directory_uri() . '/includes/js/wonkasoft-tools-options-js.js' ), array( 'jquery' ), '20190819', true );
+			wp_enqueue_script( 'wonkasoft-tools-options-js', WONKASOFT_REFERSION_INIT_URL . '/includes/js/wonkasoft-tools-options-js.js', array( 'jquery' ), '20190819', true );
 		endif;
 	}
 
@@ -404,6 +387,13 @@ class Wonkasoft_Refersion_Init_Admin {
 	public function wonkasoft_init_plugin_screen_action_link() {
 		add_filter( 'plugin_action_links_' . WONKASOFT_REFERSION_INIT_BASENAME, 'wonkasoft_refersion_init_add_settings_link_filter', 10, 1 );
 		add_filter( 'plugin_row_meta', 'wonkasoft_refersion_init_add_description_link_filter', 10, 2 );
+	}
+
+	/**
+	 * This function is the callback ajax requests for this wonkasoft tools.
+	 */
+	public function wonkasoft_plugins_ajax_requests() {
+		include_once plugin_dir_path( __FILE__ ) . 'partials/wonkasoft-plugins-ajax.php';
 	}
 
 }
